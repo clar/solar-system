@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>太阳系 · Solar System</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene"></canvas>
+
+    <div id="loading">
+      <div class="loading-title">太阳系</div>
+      <div class="loading-bar"><div class="loading-bar-fill" id="loading-fill"></div></div>
+      <div class="loading-text" id="loading-text">正在加载纹理…</div>
+    </div>
+
+    <header id="title-bar">
+      <h1>太阳系</h1>
+      <span class="subtitle">Solar System</span>
+    </header>
+
+    <nav id="planet-nav"></nav>
+
+    <aside id="info-panel">
+      <button id="info-close" title="关闭">×</button>
+      <div class="info-header">
+        <h2 id="info-name"></h2>
+        <span id="info-name-en"></span>
+      </div>
+      <p id="info-desc"></p>
+      <dl id="info-stats"></dl>
+    </aside>
+
+    <footer id="controls">
+      <div class="ctrl-group">
+        <button id="btn-pause" title="暂停 / 播放">⏸</button>
+        <div class="speed-buttons" id="speed-buttons"></div>
+      </div>
+      <div class="ctrl-group">
+        <label class="toggle"><input type="checkbox" id="toggle-orbits" checked /><span>轨道线</span></label>
+        <label class="toggle"><input type="checkbox" id="toggle-labels" checked /><span>标签</span></label>
+      </div>
+      <div class="ctrl-group">
+        <span id="sim-date"></span>
+      </div>
+    </footer>
+
+    <div id="labels"></div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
