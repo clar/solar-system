@@ -2,7 +2,9 @@
 
 一个追求照片级真实感的太阳系 3D 介绍页面，基于 Three.js。
 
-![tech](https://img.shields.io/badge/Three.js-r185-blue) ![tech](https://img.shields.io/badge/Vite-8-purple)
+**在线体验：<https://earth-simulate.vercel.app>**
+
+![tech](https://img.shields.io/badge/Three.js-r185-blue) ![tech](https://img.shields.io/badge/Vite-8-purple) [![deploy](https://img.shields.io/badge/Vercel-live-black?logo=vercel)](https://earth-simulate.vercel.app)
 
 ## 运行
 
