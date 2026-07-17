@@ -81,6 +81,36 @@ export function updateSimDate(date) {
   document.getElementById('sim-date').textContent = `${y}-${m}-${d}`;
 }
 
+// ---------- 视角机位 ----------
+
+export function initViewPanel(views, onSelect) {
+  const panel = document.getElementById('view-panel');
+  const list = document.getElementById('view-list');
+  document.getElementById('view-toggle').addEventListener('click', () => {
+    panel.classList.toggle('open');
+  });
+  for (const v of views) {
+    const item = document.createElement('button');
+    item.className = 'view-item';
+    item.dataset.id = v.id;
+    const name = document.createElement('span');
+    name.className = 'view-name';
+    name.textContent = v.name;
+    const desc = document.createElement('span');
+    desc.className = 'view-desc';
+    desc.textContent = v.desc;
+    item.append(name, desc);
+    item.addEventListener('click', () => onSelect(v.id));
+    list.appendChild(item);
+  }
+}
+
+export function setActiveView(id) {
+  document.querySelectorAll('.view-item').forEach((b) => {
+    b.classList.toggle('active', b.dataset.id === id);
+  });
+}
+
 // ---------- 3D 标签 ----------
 
 export function createLabels(bodies, onClick) {

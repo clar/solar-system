@@ -264,6 +264,82 @@ html, body {
   letter-spacing: 1px;
 }
 
+/* ---------- camera views ---------- */
+#view-panel {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+#view-toggle {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--text-dim);
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+#view-toggle:hover {
+  color: var(--text-main);
+}
+#view-panel.open #view-toggle {
+  color: var(--accent);
+  border-color: rgba(106, 176, 255, 0.4);
+}
+#view-list {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 8px;
+  width: 216px;
+}
+#view-panel.open #view-list {
+  display: flex;
+}
+.view-item {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: inherit;
+  transition: background 0.15s ease;
+}
+.view-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.view-name {
+  font-size: 13px;
+  color: var(--text-main);
+  letter-spacing: 2px;
+}
+.view-item.active .view-name {
+  color: var(--accent);
+}
+.view-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
 /* ---------- 3D labels ---------- */
 #labels {
   position: absolute;

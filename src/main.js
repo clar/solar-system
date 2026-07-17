@@ -7,6 +7,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { SUN, PLANETS, MOON, SPEEDS, DEFAULT_SPEED_INDEX } from './data.js';
 import { createStarfield, createSun, createPlanet, createMoon } from './bodies.js';
+import { createViews } from './views.js';
 import * as ui from './ui.js';
 
 // ---------- 渲染器 / 场景 / 相机 ----------
@@ -91,15 +92,27 @@ const START_DATE = new Date(2026, 6, 17);
 
 // ---------- 聚焦 / 相机动画 ----------
 
-let focusedId = null;
-let tween = null; // { fromPos, toPos, fromTarget, toTarget, t, duration }
+let followId = null; // 相机跟随的天体（聚焦或跟随型机位）
+let tween = null;
 const prevFocusPos = new THREE.Vector3();
+
+function startTween(toPos, toTarget, duration = 1.4) {
+  tween = {
+    fromPos: camera.position.clone(),
+    toPos,
+    fromTarget: controls.target.clone(),
+    toTarget,
+    t: 0,
+    duration,
+  };
+}
 
 function focusBody(id) {
   const body = focusables.get(id);
   if (!body) return;
-  focusedId = id;
+  followId = id;
   ui.showInfo(body.data);
+  ui.setActiveView(null);
 
   const bodyPos = body.getWorldPos();
   const r = body.data.radius;
@@ -109,29 +122,25 @@ function focusBody(id) {
   dir.y = Math.max(dir.y, 0.25);
   dir.normalize();
 
-  tween = {
-    fromPos: camera.position.clone(),
-    toPos: bodyPos.clone().add(dir.multiplyScalar(dist)),
-    fromTarget: controls.target.clone(),
-    toTarget: bodyPos.clone(),
-    t: 0,
-    duration: 1.4,
-  };
+  startTween(bodyPos.clone().add(dir.multiplyScalar(dist)), bodyPos.clone());
   prevFocusPos.copy(bodyPos);
 }
 
-function unfocus() {
-  if (focusedId === null && !tween) return;
-  focusedId = null;
+function applyView(view) {
+  const { pos, target, follow } = view.getView();
+  followId = follow || null;
   ui.hideInfo();
-  tween = {
-    fromPos: camera.position.clone(),
-    toPos: OVERVIEW_POS.clone(),
-    fromTarget: controls.target.clone(),
-    toTarget: new THREE.Vector3(0, 0, 0),
-    t: 0,
-    duration: 1.4,
-  };
+  ui.setActiveView(view.id);
+  startTween(pos, target, 1.6);
+  if (followId) prevFocusPos.copy(focusables.get(followId).getWorldPos());
+}
+
+function unfocus() {
+  if (followId === null && !tween) return;
+  followId = null;
+  ui.hideInfo();
+  ui.setActiveView(null);
+  startTween(OVERVIEW_POS.clone(), new THREE.Vector3(0, 0, 0));
 }
 
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -155,6 +164,11 @@ ui.initUI({
 });
 
 const labels = ui.createLabels([SUN, ...PLANETS, MOON], focusBody);
+
+const views = createViews((id) => focusables.get(id).getWorldPos());
+ui.initViewPanel(views, (id) => applyView(views.find((v) => v.id === id)));
+// 手动拖拽后不再是预设机位，取消高亮
+controls.addEventListener('start', () => ui.setActiveView(null));
 
 // ---------- 拾取 ----------
 
@@ -247,8 +261,8 @@ function animate() {
     tween.t += dt / tween.duration;
     const k = easeInOut(Math.min(tween.t, 1));
     // 聚焦目标在移动，动态刷新终点
-    if (focusedId) {
-      const bodyPos = focusables.get(focusedId).getWorldPos();
+    if (followId) {
+      const bodyPos = focusables.get(followId).getWorldPos();
       const delta = bodyPos.clone().sub(prevFocusPos);
       tween.toPos.add(delta);
       tween.toTarget.copy(bodyPos);
@@ -257,9 +271,9 @@ function animate() {
     camera.position.lerpVectors(tween.fromPos, tween.toPos, k);
     controls.target.lerpVectors(tween.fromTarget, tween.toTarget, k);
     if (tween.t >= 1) tween = null;
-  } else if (focusedId) {
+  } else if (followId) {
     // 跟随：目标移动多少，相机平移多少
-    const bodyPos = focusables.get(focusedId).getWorldPos();
+    const bodyPos = focusables.get(followId).getWorldPos();
     const delta = tmpV3.copy(bodyPos).sub(prevFocusPos);
     camera.position.add(delta);
     controls.target.copy(bodyPos);
